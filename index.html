@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Volleyball League (RVL)</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .badge {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .roster-team {
+            margin-bottom: 25px;
+        }
+
+        .roster-team h3 {
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .loader {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Roblox Volleyball League</h1>
+            <p class="subtitle">Official Standings & Roster Dashboard</p>
+        </header>
+
+        <div class="grid-layout">
+            <!-- Standings Section -->
+            <div class="card">
+                <h2>League Standings</h2>
+                <div id="standings-container">
+                    <div class="loader">Loading standings...</div>
+                </div>
+            </div>
+
+            <!-- Team Rosters Section -->
+            <div class="card">
+                <h2>Team Rosters</h2>
+                <div id="rosters-container">
+                    <div class="loader">Fetching roster data...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Target Rosters Tab CSV URL
+        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQM9fRTM45OKjnhEd1GK8souePrvqg59CS_PcW4QPIIgVS3rPahulju7ePSoenY-TbqCyk07KVLWo_v/pub?gid=489838565&single=true&output=csv";
+
+        // Global state storage
+        let rostersData = {};
+        let teamsData = [];
+
+        // Fetch data from published Google Sheet tab
+        async function fetchRosterData() {
+            try {
+                const response = await fetch(SHEET_CSV_URL);
+                if (!response.ok) throw new Error("Network response was not ok");
+                const data = await response.text();
+                parseRostersCSV(data);
+            } catch (error) {
+                console.error("Error loading roster data:", error);
+                document.getElementById('rosters-container').innerHTML = '<p style="color:#ef4444;">Failed to load roster data.</p>';
+                document.getElementById('standings-container').innerHTML = '<p style="color:#ef4444;">Failed to load standings.</p>';
+            }
+        }
+
+        // Parse CSV text into application state
+        function parseRostersCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length <= 1) return;
+
+            rostersData = {};
+            teamsData = [];
+
+            // Read starting from line 1 (skipping header)
+            for (let i = 1; i < lines.length; i++) {
+                const row = lines[i].split(',').map(cell => cell.trim().replace(/^"|"$/g, ''));
+                if (row.length < 2) continue;
+
+                const team = row[0];
+                const username = row[1];
+                const role = row[2] || 'Player';
+
+                if (!team || !username) continue;
+
+                if (!rostersData[team]) {
+                    rostersData[team] = [];
+                    teamsData.push({ name: team, wins: 0, losses: 0 });
+                }
+
+                rostersData[team].push({ name: username, role: role });
+            }
+
+            renderStandings();
+            renderRosters();
+        }
+
+        // Render League Standings Table
+        function renderStandings() {
+            const container = document.getElementById('standings-container');
+            if (teamsData.length === 0) {
+                container.innerHTML = '<p>No teams registered.</p>';
+                return;
+            }
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Wins</th>
+                            <th>Losses</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            teamsData.forEach(team => {
+                html += `
+                    <tr>
+                        <td><strong>${escapeHtml(team.name)}</strong></td>
+                        <td>${team.wins}</td>
+                        <td>${team.losses}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Render Rosters UI
+        function renderRosters() {
+            const container = document.getElementById('rosters-container');
+            const teamNames = Object.keys(rostersData);
+
+            if (teamNames.length === 0) {
+                container.innerHTML = '<p>No roster information available.</p>';
+                return;
+            }
+
+            let html = '';
+
+            teamNames.forEach(team => {
+                html += `
+                    <div class="roster-team">
+                        <h3>${escapeHtml(team)}</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Player</th>
+                                    <th>Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                rostersData[team].forEach(player => {
+                    html += `
+                        <tr>
+                            <td>${escapeHtml(player.name)}</td>
+                            <td><span class="badge">${escapeHtml(player.role)}</span></td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table></div>';
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Utility to prevent XSS issues in rendered strings
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Initialize script on document load
+        document.addEventListener("DOMContentLoaded", fetchRosterData);
+    </script>
+</body>
+</html>
