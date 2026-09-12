@@ -3,278 +3,769 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roblox Volleyball League (RVL)</title>
+    <title>RVL - Roblox Volleyball League</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-color: #3b82f6;
+            --bg-dark: #090d16;
+            --card-bg: #131b2e;
+            --card-border: #1f2d4a;
+            --accent-blue: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --accent-red: #ef4444;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border-color: #334155;
+            --gold: #fbbf24;
+            --silver: #94a3b8;
+            --bronze: #d97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--bg-dark);
             color: var(--text-main);
-            margin: 0;
-            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
+        /* Top Navigation Header */
+        header {
+            background: rgba(19, 27, 46, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            font-weight: 900;
+            font-size: 1.4rem;
+            padding: 6px 14px;
+            border-radius: 8px;
+            letter-spacing: 2px;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .brand-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-main);
+        }
+
+        nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-btn.active {
+            color: white;
+            background: var(--accent-blue);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .admin-btn {
+            border-color: var(--card-border);
+        }
+
+        /* Container & Page Views */
         .container {
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 30px auto;
+            padding: 0 20px;
+            width: 100%;
+            flex: 1;
         }
 
-        header {
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero / Home View */
+        .hero {
             text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0) 100%);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
             margin-bottom: 30px;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            color: var(--text-main);
-            margin-bottom: 5px;
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        p.subtitle {
+        .hero p {
             color: var(--text-muted);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px auto;
         }
 
-        .grid-layout {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
         }
 
-        .card {
-            background-color: var(--card-bg);
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+            padding: 12px 28px;
             border-radius: 8px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
-        .card h2 {
-            margin-top: 0;
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-main);
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* Cards & Tables */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 12px;
+        }
+
+        .card-title {
             font-size: 1.4rem;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 8px;
+            font-weight: 700;
+            color: #93c5fd;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
 
         th, td {
+            padding: 14px 16px;
             text-align: left;
-            padding: 10px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--card-border);
         }
 
         th {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.2);
         }
 
-        .badge {
-            background-color: var(--accent-color);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
         }
 
-        .roster-team {
+        .rank {
+            font-weight: 700;
+            width: 60px;
+        }
+
+        .rank-1 { color: var(--gold); }
+        .rank-2 { color: var(--silver); }
+        .rank-3 { color: var(--bronze); }
+
+        .badge-wins {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        .badge-losses {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        /* Team Selector / Dropdown Accordion */
+        .team-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
             margin-bottom: 25px;
         }
 
-        .roster-team h3 {
-            margin-bottom: 10px;
-            color: var(--accent-color);
+        .team-card {
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .loader {
-            text-align: center;
+        .team-card:hover, .team-card.selected {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 12px var(--accent-glow);
+            background: #1e293b;
+        }
+
+        .team-card h3 {
+            font-size: 1.1rem;
+        }
+
+        .team-card .player-count {
             color: var(--text-muted);
-            font-style: italic;
+            font-size: 0.85rem;
+        }
+
+        .roster-display {
+            display: none;
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .roster-display.active {
+            display: block;
+        }
+
+        .role-badge {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Leaderboards & Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
             padding: 20px;
+        }
+
+        .stat-card h3 {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .stat-leader {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-leader:last-child {
+            border-bottom: none;
+        }
+
+        /* Admin Form */
+        #adminSection {
+            display: none;
+            background: #1a2336;
+            border: 1px solid var(--accent-blue);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px 14px;
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .score-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .loader-text {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>Roblox Volleyball League</h1>
-            <p class="subtitle">Official Standings & Roster Dashboard</p>
-        </header>
-
-        <div class="grid-layout">
-            <!-- Standings Section -->
-            <div class="card">
-                <h2>League Standings</h2>
-                <div id="standings-container">
-                    <div class="loader">Loading standings...</div>
-                </div>
-            </div>
-
-            <!-- Team Rosters Section -->
-            <div class="card">
-                <h2>Team Rosters</h2>
-                <div id="rosters-container">
-                    <div class="loader">Fetching roster data...</div>
-                </div>
-            </div>
+    <header>
+        <div class="brand-logo" onclick="switchTab('home')">
+            <div class="logo-badge">RVL</div>
+            <div class="brand-name">ROBLOX VOLLEYBALL LEAGUE</div>
         </div>
-    </div>
+        <nav>
+            <button class="nav-btn active" onclick="switchTab('home')">Home</button>
+            <button class="nav-btn" onclick="switchTab('standings')">Standings</button>
+            <button class="nav-btn" onclick="switchTab('teams')">Teams & Rosters</button>
+            <button class="nav-btn" onclick="switchTab('stats')">Leaderboards</button>
+            <button class="nav-btn admin-btn" onclick="toggleAdmin()">Admin Mode</button>
+        </nav>
+    </header>
 
-    <script>
-        // Target Rosters Tab CSV URL
-        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQM9fRTM45OKjnhEd1GK8souePrvqg59CS_PcW4QPIIgVS3rPahulju7ePSoenY-TbqCyk07KVLWo_v/pub?gid=489838565&single=true&output=csv";
+    <div class="container">
 
-        // Global state storage
-        let rostersData = {};
-        let teamsData = [];
+        <!-- ADMIN MODAL SECTION -->
+        <div class="card" id="adminSection">
+            <div class="card-header">
+                <span class="card-title">🔒 Log Match Result</span>
+            </div>
+            <form id="matchForm">
+                <div class="score-row">
+                    <div class="form-group">
+                        <label for="team1">Home Team</label>
+                        <select id="team1" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="team2">Away Team</label>
+                        <select id="team2" required></select>
+                    </div>
+                </div>
+                <div class="score-row">
+                    <div class="form-group">
+                        <label for="score1">Home Sets Won</label>
+                        <input type="number" id="score1" min="0" max="5" value="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="score2">Away Sets Won</label>
+                        <input type="number" id="score2" min="0" max="5" value="0" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Record Match</button>
+            </form>
+        </div>
 
-        // Fetch data from published Google Sheet tab
-        async function fetchRosterData() {
-            try {
-                const response = await fetch(SHEET_CSV_URL);
-                if (!response.ok) throw new Error("Network response was not ok");
-                const data = await response.text();
-                parseRostersCSV(data);
-            } catch (error) {
-                console.error("Error loading roster data:", error);
-                document.getElementById('rosters-container').innerHTML = '<p style="color:#ef4444;">Failed to load roster data.</p>';
-                document.getElementById('standings-container').innerHTML = '<p style="color:#ef4444;">Failed to load standings.</p>';
-            }
-        }
+        <!-- HOME TAB -->
+        <div id="home" class="tab-content active">
+            <div class="hero">
+                <h1>WELCOME TO RVL</h1>
+                <p>Track live standings, explore team rosters, and follow official season stats for the Roblox Volleyball League.</p>
+                <div class="hero-buttons">
+                    <button class="btn-primary" onclick="switchTab('standings')">View Standings</button>
+                    <button class="btn-secondary" onclick="switchTab('teams')">Explore Teams</button>
+                </div>
+            </div>
 
-        // Parse CSV text into application state
-        function parseRostersCSV(csvText) {
-            const lines = csvText.trim().split('\n');
-            if (lines.length <= 1) return;
-
-            rostersData = {};
-            teamsData = [];
-
-            // Read starting from line 1 (skipping header)
-            for (let i = 1; i < lines.length; i++) {
-                const row = lines[i].split(',').map(cell => cell.trim().replace(/^"|"$/g, ''));
-                if (row.length < 2) continue;
-
-                const team = row[0];
-                const username = row[1];
-                const role = row[2] || 'Player';
-
-                if (!team || !username) continue;
-
-                if (!rostersData[team]) {
-                    rostersData[team] = [];
-                    teamsData.push({ name: team, wins: 0, losses: 0 });
-                }
-
-                rostersData[team].push({ name: username, role: role });
-            }
-
-            renderStandings();
-            renderRosters();
-        }
-
-        // Render League Standings Table
-        function renderStandings() {
-            const container = document.getElementById('standings-container');
-            if (teamsData.length === 0) {
-                container.innerHTML = '<p>No teams registered.</p>';
-                return;
-            }
-
-            let html = `
-                <table>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Top Standings Preview</span>
+                </div>
+                <table id="homeStandingsTable">
                     <thead>
                         <tr>
+                            <th class="rank">#</th>
                             <th>Team</th>
                             <th>Wins</th>
                             <th>Losses</th>
                         </tr>
                     </thead>
-                    <tbody>
-            `;
+                    <tbody id="homeStandingsBody">
+                        <tr><td colspan="4" class="loader-text">Loading teams...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-            teamsData.forEach(team => {
-                html += `
+        <!-- STANDINGS TAB -->
+        <div id="standings" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Official Season Standings</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="rank">#</th>
+                            <th>Team Name</th>
+                            <th>Wins (W)</th>
+                            <th>Losses (L)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fullStandingsBody">
+                        <tr><td colspan="4" class="loader-text">Loading standings...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TEAMS & ROSTERS TAB -->
+        <div id="teams" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Select a Team</span>
+                </div>
+                <div class="team-selector" id="teamCardsContainer">
+                    <div class="loader-text">Loading teams from spreadsheet...</div>
+                </div>
+            </div>
+
+            <div class="roster-display" id="rosterDetails">
+                <div class="card-header">
+                    <span class="card-title" id="selectedTeamTitle">Team Roster</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Player Username</th>
+                            <th>Role / Position</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rosterTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- LEADERBOARDS & STATS TAB -->
+        <div id="stats" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Most Active Teams</h3>
+                    <div id="activeTeamsStats">
+                        <div class="loader-text">Loading stats...</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>League Summary</h3>
+                    <div class="stat-leader">
+                        <span>Total Registered Teams</span>
+                        <strong id="statTotalTeams">0</strong>
+                    </div>
+                    <div class="stat-leader">
+                        <span>Total Registered Players</span>
+                        <strong id="statTotalPlayers">0</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = "rvl123";
+        let isAdmin = false;
+
+        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQM9fRTM45OKjnhEd1GK8souePrvqg59CS_PcW4QPIIgVS3rPahulju7ePSoenY-TbqCyk07KVLWo_v/pub?gid=489838565&single=true&output=csv";
+
+        let rostersData = {};
+        let dynamicTeams = [];
+        let teamsData = JSON.parse(localStorage.getItem('rvl_teams_v3')) || [];
+        let matchLogs = JSON.parse(localStorage.getItem('rvl_matches_v3')) || [];
+
+        function saveData() {
+            localStorage.setItem('rvl_teams_v3', JSON.stringify(teamsData));
+            localStorage.setItem('rvl_matches_v3', JSON.stringify(matchLogs));
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+            const targetTab = document.getElementById(tabId);
+            if (targetTab) targetTab.classList.add('active');
+
+            const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(btn => 
+                btn.getAttribute('onclick')?.includes(tabId)
+            );
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        async function fetchSheetData() {
+            try {
+                const response = await fetch(SHEET_CSV_URL);
+                const csvText = await response.text();
+                parseSheetCSV(csvText);
+            } catch (error) {
+                console.error("Error loading CSV:", error);
+            }
+        }
+
+        function parseSheetCSV(text) {
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            rostersData = {};
+            const loadedTeamNames = new Set();
+
+            lines.slice(1).forEach(line => {
+                const parts = line.split(',').map(p => p.trim().replace(/^"|"$/g, ''));
+                if (parts.length < 2) return;
+
+                const team = parts[0];
+                const player = parts[1];
+                const role = parts[2] || 'Player';
+
+                if (!team || !player) return;
+
+                loadedTeamNames.add(team);
+                if (!rostersData[team]) rostersData[team] = [];
+                rostersData[team].push({ name: player, role: role });
+            });
+
+            dynamicTeams = Array.from(loadedTeamNames);
+
+            dynamicTeams.forEach(name => {
+                if (!teamsData.find(t => t.name === name)) {
+                    teamsData.push({ name: name, wins: 0, losses: 0 });
+                }
+            });
+
+            saveData();
+            renderAllViews();
+        }
+
+        function renderAllViews() {
+            renderStandings();
+            renderTeamSelector();
+            renderStats();
+            populateDropdowns();
+        }
+
+        function renderStandings() {
+            const sorted = [...teamsData].sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+
+            const buildRows = (limit) => {
+                const list = limit ? sorted.slice(0, limit) : sorted;
+                if (list.length === 0) return '<tr><td colspan="4" class="loader-text">No teams found.</td></tr>';
+
+                return list.map((t, i) => `
                     <tr>
-                        <td><strong>${escapeHtml(team.name)}</strong></td>
-                        <td>${team.wins}</td>
-                        <td>${team.losses}</td>
+                        <td class="rank rank-${i+1}">#${i+1}</td>
+                        <td><strong>${t.name}</strong></td>
+                        <td><span class="badge-wins">${t.wins}</span></td>
+                        <td><span class="badge-losses">${t.losses}</span></td>
+                    </tr>
+                `).join('');
+            };
+
+            document.getElementById('homeStandingsBody').innerHTML = buildRows(5);
+            document.getElementById('fullStandingsBody').innerHTML = buildRows();
+        }
+
+        function renderTeamSelector() {
+            const container = document.getElementById('teamCardsContainer');
+            container.innerHTML = '';
+
+            const teamNames = Object.keys(rostersData);
+            if (teamNames.length === 0) {
+                container.innerHTML = '<div class="loader-text">No team data available.</div>';
+                return;
+            }
+
+            teamNames.forEach(team => {
+                const count = rostersData[team].length;
+                container.innerHTML += `
+                    <div class="team-card" onclick="selectTeam('${team}', this)">
+                        <div>
+                            <h3>${team}</h3>
+                            <span class="player-count">${count} Players</span>
+                        </div>
+                        <span style="color: var(--text-muted)">→</span>
+                    </div>
+                `;
+            });
+        }
+
+        function selectTeam(teamName, element) {
+            document.querySelectorAll('.team-card').forEach(el => el.classList.remove('selected'));
+            if (element) element.classList.add('selected');
+
+            const rosterDetails = document.getElementById('rosterDetails');
+            const title = document.getElementById('selectedTeamTitle');
+            const tbody = document.getElementById('rosterTableBody');
+
+            title.innerText = `${teamName} Roster`;
+            tbody.innerHTML = '';
+
+            const players = rostersData[teamName] || [];
+            players.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${p.name}</strong></td>
+                        <td><span class="role-badge">${p.role}</span></td>
                     </tr>
                 `;
             });
 
-            html += '</tbody></table>';
-            container.innerHTML = html;
+            rosterDetails.classList.add('active');
         }
 
-        // Render Rosters UI
-        function renderRosters() {
-            const container = document.getElementById('rosters-container');
-            const teamNames = Object.keys(rostersData);
+        function renderStats() {
+            let totalPlayers = 0;
+            Object.values(rostersData).forEach(arr => totalPlayers += arr.length);
 
-            if (teamNames.length === 0) {
-                container.innerHTML = '<p>No roster information available.</p>';
-                return;
-            }
+            document.getElementById('statTotalTeams').innerText = Object.keys(rostersData).length;
+            document.getElementById('statTotalPlayers').innerText = totalPlayers;
 
-            let html = '';
+            const activeContainer = document.getElementById('activeTeamsStats');
+            const sortedByWins = [...teamsData].sort((a,b) => b.wins - a.wins).slice(0, 3);
 
-            teamNames.forEach(team => {
-                html += `
-                    <div class="roster-team">
-                        <h3>${escapeHtml(team)}</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Player</th>
-                                    <th>Role</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
+            activeContainer.innerHTML = sortedByWins.map(t => `
+                <div class="stat-leader">
+                    <span>${t.name}</span>
+                    <strong style="color: #4ade80">${t.wins} Wins</strong>
+                </div>
+            `).join('');
+        }
 
-                rostersData[team].forEach(player => {
-                    html += `
-                        <tr>
-                            <td>${escapeHtml(player.name)}</td>
-                            <td><span class="badge">${escapeHtml(player.role)}</span></td>
-                        </tr>
-                    `;
-                });
+        function populateDropdowns() {
+            const t1 = document.getElementById('team1');
+            const t2 = document.getElementById('team2');
+            t1.innerHTML = '<option value="">Select Home Team</option>';
+            t2.innerHTML = '<option value="">Select Away Team</option>';
 
-                html += '</tbody></table></div>';
+            dynamicTeams.forEach(name => {
+                t1.innerHTML += `<option value="${name}">${name}</option>`;
+                t2.innerHTML += `<option value="${name}">${name}</option>`;
             });
-
-            container.innerHTML = html;
         }
 
-        // Utility to prevent XSS issues in rendered strings
-        function escapeHtml(str) {
-            return String(str)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+        function toggleAdmin() {
+            if (!isAdmin) {
+                const pass = prompt("Enter Admin Password:");
+                if (pass === ADMIN_PASSWORD) {
+                    isAdmin = true;
+                    document.getElementById('adminSection').style.display = 'block';
+                    alert("Admin Mode Unlocked!");
+                } else if (pass !== null) {
+                    alert("Incorrect Password!");
+                }
+            } else {
+                isAdmin = false;
+                document.getElementById('adminSection').style.display = 'none';
+            }
         }
 
-        // Initialize script on document load
-        document.addEventListener("DOMContentLoaded", fetchRosterData);
+        document.getElementById('matchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const t1 = document.getElementById('team1').value;
+            const t2 = document.getElementById('team2').value;
+            const s1 = parseInt(document.getElementById('score1').value);
+            const s2 = parseInt(document.getElementById('score2').value);
+
+            if (t1 === t2) return alert("Select two different teams!");
+            if (s1 === s2) return alert("Matches cannot end in a tie!");
+
+            const winner = s1 > s2 ? t1 : t2;
+            const loser = s1 > s2 ? t2 : t1;
+
+            teamsData.find(t => t.name === winner).wins += 1;
+            teamsData.find(t => t.name === loser).losses += 1;
+
+            matchLogs.push({ team1: t1, team2: t2, score1: s1, score2: s2, winner });
+
+            saveData();
+            renderAllViews();
+
+            document.getElementById('score1').value = 0;
+            document.getElementById('score2').value = 0;
+            alert("Match recorded!");
+        });
+
+        fetchSheetData();
     </script>
 </body>
 </html>
