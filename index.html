@@ -76,6 +76,7 @@
         nav {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .nav-btn {
@@ -263,6 +264,47 @@
             font-weight: 700;
         }
 
+        /* Match Results Feed Grid */
+        .matches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .match-card {
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .match-teams {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .match-score {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .winner-tag {
+            font-size: 0.8rem;
+            color: #4ade80;
+            text-align: right;
+        }
+
         /* Team Selector / Dropdown Accordion */
         .team-selector {
             display: grid;
@@ -404,6 +446,7 @@
             <button class="nav-btn active" onclick="switchTab('home')">Home</button>
             <button class="nav-btn" onclick="switchTab('standings')">Standings</button>
             <button class="nav-btn" onclick="switchTab('teams')">Teams & Rosters</button>
+            <button class="nav-btn" onclick="switchTab('matches')">Match History</button>
             <button class="nav-btn" onclick="switchTab('stats')">Leaderboards</button>
             <button class="nav-btn admin-btn" onclick="toggleAdmin()">Admin Mode</button>
         </nav>
@@ -411,7 +454,7 @@
 
     <div class="container">
 
-        <!-- ADMIN MODAL SECTION -->
+        <!-- ADMIN SECTION -->
         <div class="card" id="adminSection">
             <div class="card-header">
                 <span class="card-title">🔒 Log Match Result</span>
@@ -521,6 +564,18 @@
             </div>
         </div>
 
+        <!-- MATCH HISTORY TAB (NEW) -->
+        <div id="matches" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Recent Match Results</span>
+                </div>
+                <div class="matches-grid" id="matchHistoryContainer">
+                    <div class="loader-text">No matches recorded yet. Use Admin Mode to log match results.</div>
+                </div>
+            </div>
+        </div>
+
         <!-- LEADERBOARDS & STATS TAB -->
         <div id="stats" class="tab-content">
             <div class="stats-grid">
@@ -620,6 +675,7 @@
         function renderAllViews() {
             renderStandings();
             renderTeamSelector();
+            renderMatchHistory();
             renderStats();
             populateDropdowns();
         }
@@ -691,6 +747,26 @@
             });
 
             rosterDetails.classList.add('active');
+        }
+
+        function renderMatchHistory() {
+            const container = document.getElementById('matchHistoryContainer');
+            if (matchLogs.length === 0) {
+                container.innerHTML = '<div class="loader-text" style="grid-column: 1 / -1;">No matches recorded yet. Use Admin Mode to log match results.</div>';
+                return;
+            }
+
+            container.innerHTML = matchLogs.slice().reverse().map(m => `
+                <div class="match-card">
+                    <div class="match-teams">
+                        <span>${m.team1}</span>
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">vs</span>
+                        <span>${m.team2}</span>
+                    </div>
+                    <div class="match-score">${m.score1} - ${m.score2}</div>
+                    <div class="winner-tag">Winner: <strong>${m.winner}</strong></div>
+                </div>
+            `).join('');
         }
 
         function renderStats() {
